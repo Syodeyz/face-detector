@@ -6,6 +6,7 @@ import ImageLinkForm from './components/imageLinkForm/ImageLinkForm';
 import FaceRecognition from './components/faceRecognition/FaceRecognition';
 import Rank from './components/rank/Rank';
 import SignIn from './components/signIn/SignIn';
+import Register from './components/register/Register';
 import Particles from 'react-particles-js';
 import Clarifai from 'clarifai';
 
@@ -16,6 +17,9 @@ const app = new Clarifai.App({
   apiKey:'b11e90c19d67426e86ce298ea968f69e'
 });
 
+/**
+ * for the animation in the background, thanks to particles.js-react.
+ */
 const particlesOptions = {
   particles: {
     number: {
@@ -31,33 +35,49 @@ const particlesOptions = {
 class App extends React.Component{
   constructor(){
     super();
+  
     this.state = {
-      input:'',
-      imageUrl: '',
-      boundingBox: {}
+      input:'',         
+      imageUrl: '',     
+      boundingBox: {},  // for the box boundary around the face
+      route:'signIn',   // for routing through different components
+      isSignedIn: false 
     }
   }
 
+// listener on input for url
 onInputChange = (event) => {
   this.setState({input:event.target.value});
 }
 
+/**
+ * changes the route of of the app as per given route-parameter. 
+ * @param {string} route 
+ */
+onRouteChange = (route) =>{
+  if(route === 'signIn'){
+    this.setState({isSignedIn:false})
+  }else if(route === 'home'){
+    this.setState({isSignedIn:true})
+  }
+  this.setState({route:route});
+}
+
+/**
+ * Gets the response array from api and return the box boundaries
+ * @param {array} data 
+ * @returns object with boudaries properties; i.e top, right, bottom, left
+ */
 calculateBoxBoundaries = (data) => {
-  //console.log("what happenend???");
-  //console.log(data.outputs[0].data.regions[0].region_info.bounding_box);
   const boxBoundaries = data.outputs[0].data.regions[0].region_info.bounding_box;
-  //boundingBox.top_row + "% " + boundingBox.right_col + "% " + boundingBox.bottom_row + "% " + boundingBox.left_col
-  //console.log(boxBoundaries);
   const image = document.getElementById('inputImage');
   const width = Number(image.width);
   const height = Number(image.height);
-  console.log("width "+ width, "height "+ height);
+
   const top = height * boxBoundaries.top_row;
   const right = width - (width * boxBoundaries.right_col);
   const bottom = height - (height * boxBoundaries.bottom_row);
   const left = width * boxBoundaries.left_col;
-  
-  console.log("top " + top, "right " + right, "bottom " + bottom, "left " + left);
   
   return {
     'top': top,
@@ -65,11 +85,9 @@ calculateBoxBoundaries = (data) => {
     'bottom': bottom,
     'left':left
   }
-  //console.log(response.outputs[0].data.regions[0].region_info.bounding_box);
 }
 
 displayBoundingBox = (box) =>{
-  console.log(box);
   this.setState({boundingBox:box})
 }
 
@@ -87,12 +105,26 @@ onButtonSubmit = () =>{
     return (
       <div className="App">
        <Particles className="particles" params={particlesOptions}/>
-        <Navigation />
-        <SignIn />
-        <Logo />
-        <Rank />
-        <ImageLinkForm onInputChange = {this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
-        <FaceRecognition imageUrl={this.state.imageUrl} boundingBox={this.state.boundingBox}/>
+       <Navigation onRouteChange={this.onRouteChange} isSignedIn={this.state.isSignedIn}/>
+        {
+        this.state.route === 'home' ? 
+        <div className="home">
+          <Logo />
+          <Rank />
+          <ImageLinkForm onInputChange = {this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
+          <FaceRecognition imageUrl={this.state.imageUrl} boundingBox={this.state.boundingBox}/>
+          </div>
+        :
+        (
+          this.state.route === 'signIn' ?
+          <SignIn onRouteChange={this.onRouteChange}/>
+          :
+          <Register onRouteChange={this.onRouteChange}/>
+        )
+        
+        
+      }
+        
       </div>
     );
   }
