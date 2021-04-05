@@ -41,8 +41,26 @@ class App extends React.Component{
       imageUrl: '',     
       boundingBox: {},  // for the box boundary around the face
       route:'signIn',   // for routing through different components
-      isSignedIn: false 
+      isSignedIn: false,
+      user:{
+        id: '',
+        name: '',
+        email: '',
+        entries: 0,
+        joined: ''
+      } 
     }
+  }
+
+
+  loadUser = (data) => {
+    this.setState({user:{
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      entries: data.entries,
+      joined: data.joined
+    }})
   }
 
 // listener on input for url
@@ -97,10 +115,31 @@ onButtonSubmit = () =>{
   .predict(
     Clarifai.FACE_DETECT_MODEL,
     this.state.input)
-  .then(response => this.displayBoundingBox(this.calculateBoxBoundaries(response))
+  .then(response => {
+    if(response){
+      fetch('http://localhost:3001/image', {
+      method:'put',
+      headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+        id:this.state.user.id,
+        })
+      })
+    .then(response =>response.json()
+    .then(user => {
+      if(user.id){
+        //console.log(data);
+        this.setState(Object.assign(this.state.user, {entries: user.entries}));
+      }
+    }))
+    }
+  this.displayBoundingBox(this.calculateBoxBoundaries(response))
   .catch(err => console.log("error with server " + err))
+  }
   );
 }
+
+  
+
   render(){
     return (
       <div className="App">
@@ -110,16 +149,16 @@ onButtonSubmit = () =>{
         this.state.route === 'home' ? 
         <div className="home">
           <Logo />
-          <Rank />
+          <Rank userName = {this.state.user.name} entries = {this.state.user.entries}/>
           <ImageLinkForm onInputChange = {this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
           <FaceRecognition imageUrl={this.state.imageUrl} boundingBox={this.state.boundingBox}/>
           </div>
         :
         (
           this.state.route === 'signIn' ?
-          <SignIn onRouteChange={this.onRouteChange}/>
+          <SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
           :
-          <Register onRouteChange={this.onRouteChange}/>
+          <Register onRouteChange={this.onRouteChange} loadUser={this.loadUser}/>
         )
         
         
