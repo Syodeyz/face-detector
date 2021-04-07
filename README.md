@@ -11,3 +11,5 @@ https://face-detector-cool-app.herokuapp.com/
 3. run npm install 
 4. npm start 
 
+## link to the backend repo
+https://github.com/Syodeyz/face-detector-api
