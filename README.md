@@ -1,7 +1,7 @@
 # face-detector
 A super cool react app which will detect the face.
 
-## Here is the link to the full working app deoplyoed on heroku:
+## Here is the link to the full working app deoployed on heroku:
 https://face-detector-cool-app.herokuapp.com/
 
 
