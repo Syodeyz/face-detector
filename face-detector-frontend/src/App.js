@@ -92,16 +92,13 @@ class App extends React.Component{
         console.log("actual data " + data);
 
         for (var i = 0; i < data.outputs[0].data.regions.length; i++) {
-          console.log("length regions" + data.outputs.length);
           let boxBoundaries = data.outputs[0].data.regions[i].region_info.bounding_box;
           let box = {};
-          console.log("boxBnd " + i, boxBoundaries);
           box.top = height * boxBoundaries.top_row;
           box.right = width - (width * boxBoundaries.right_col);
           box.bottom = height - (height * boxBoundaries.bottom_row);
           box.left = width * boxBoundaries.left_col;
           boxArray.push(box);
-          console.log("box " + i, box);
         }
         console.log(boxArray);
       return boxArray;
