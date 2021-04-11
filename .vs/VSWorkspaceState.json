@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\face-detector-frontend",
+    "\\face-detector-frontend\\src",
+    "\\face-detector-frontend\\src\\components",
+    "\\face-detector-frontend\\src\\components\\faceRecognition",
+    "\\face-detector-frontend\\src\\components\\register",
+    "\\face-detector-frontend\\src\\components\\signIn"
+  ],
+  "SelectedNode": "\\face-detector-frontend\\src\\components\\signIn\\SignIn.js",
+  "PreviewInSolutionExplorer": false
+}
