@@ -29,7 +29,7 @@ const particlesOptions = {
 const initialState = {
   input:'',         
   imageUrl: '',     
-  boundingBox: {},  // for the box boundary around the face
+  boundingBox: [],  // for the box boundary around the face
   route:'signIn',   // for routing through different components
   isSignedIn: false,
   user:{
@@ -83,23 +83,28 @@ class App extends React.Component{
   * @param {array} data 
   * @returns object with boudaries properties; i.e top, right, bottom, left
   */
-  calculateBoxBoundaries = (data) => {
-    const boxBoundaries = data.outputs[0].data.regions[0].region_info.bounding_box;
-    const image = document.getElementById('inputImage');
-    const width = Number(image.width);
-    const height = Number(image.height);
-    
-    const top = height * boxBoundaries.top_row;
-    const right = width - (width * boxBoundaries.right_col);
-    const bottom = height - (height * boxBoundaries.bottom_row);
-    const left = width * boxBoundaries.left_col;
-    
-    return {
-      'top': top,
-      'right': right,
-      'bottom': bottom,
-      'left':left
-    }
+    calculateBoxBoundaries = (data) => {
+        const image = document.getElementById('inputImage');
+        const width = Number(image.width);
+        const height = Number(image.height);
+        
+        const boxArray = [];
+        console.log("actual data " + data);
+
+        for (var i = 0; i < data.outputs[0].data.regions.length; i++) {
+          console.log("length regions" + data.outputs.length);
+          let boxBoundaries = data.outputs[0].data.regions[i].region_info.bounding_box;
+          let box = {};
+          console.log("boxBnd " + i, boxBoundaries);
+          box.top = height * boxBoundaries.top_row;
+          box.right = width - (width * boxBoundaries.right_col);
+          box.bottom = height - (height * boxBoundaries.bottom_row);
+          box.left = width * boxBoundaries.left_col;
+          boxArray.push(box);
+          console.log("box " + i, box);
+        }
+        console.log(boxArray);
+      return boxArray;
   }
   
   displayBoundingBox = (box) =>{
@@ -117,8 +122,8 @@ class App extends React.Component{
       })
       .then(response => response.json())
       .then(response => {
-        if(response){
-          fetch('https://cool-face-detector.herokuapp.com/image', {
+          if (response) {
+              fetch('https://cool-face-detector.herokuapp.com/image', {
           method:'put',
           headers:{'Content-Type':'application/json'},
           body: JSON.stringify({
@@ -147,7 +152,7 @@ class App extends React.Component{
         this.state.route === 'home' ? 
         <div className="displayHome">
         <Logo />
-        <Rank userName = {this.state.user.name} entries = {this.state.user.entries}/>
+        <Rank userName={this.state.user.name} entries={this.state.user.entries} userId={this.state.user.id }/>
         <ImageLinkForm onInputChange = {this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
         <FaceRecognition imageUrl={this.state.imageUrl} boundingBox={this.state.boundingBox}/>
         </div>
