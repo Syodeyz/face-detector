@@ -7,8 +7,8 @@
 # demo
 https://face-detector-cool-app.herokuapp.com/
 
-## Tools used 
-React 
-React-particles.js
-Tachyons
-React-tilt
+# Tools used 
+1. React 
+2. React-particles.js
+3. Tachyons
+4. React-tilt
