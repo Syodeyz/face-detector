@@ -89,7 +89,6 @@ class App extends React.Component{
         const height = Number(image.height);
         
         const boxArray = [];
-        console.log("actual data " + data);
 
         for (var i = 0; i < data.outputs[0].data.regions.length; i++) {
           let boxBoundaries = data.outputs[0].data.regions[i].region_info.bounding_box;
@@ -100,7 +99,7 @@ class App extends React.Component{
           box.left = width * boxBoundaries.left_col;
           boxArray.push(box);
         }
-        console.log(boxArray);
+ 
       return boxArray;
   }
   
